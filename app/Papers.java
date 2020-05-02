@@ -49,10 +49,10 @@ public class Papers {
     @Override
     public String toString() {
         return "{" +
-            " id='" + getId() + "'" +
-            ", title='" + getTitle() + "'" +
-            ", text='" + getText() + "'" +
-            ", citation='" + getCitation() + "'" +
-            "}";
+                " id='" + getId() + "'" +
+                ", title='" + getTitle() + "'" +
+                ", text='" + getText() + "'" +
+                ", citation='" + getCitation() + "'" +
+                "}";
     }
 }

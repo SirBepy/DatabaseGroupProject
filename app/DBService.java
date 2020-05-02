@@ -31,8 +31,8 @@ public class DBService {
 
     /**
      * getData
-     * 
-     * @param sqlQuery String that contains the SQL query that will be made
+     *
+     * @param stmt String that contains the SQL query that will be made
      * @return All objects that that query returns
      */
     private ArrayList<HashMap<String, String>> getData(PreparedStatement stmt) {
@@ -44,7 +44,7 @@ public class DBService {
             // Initializing dataNames so we can use it to get data later on
             int colLength = data.getColumnCount();
             String[] dataNames = new String[colLength];
-            for (int x = 0; x < colLength;) {
+            for (int x = 0; x < colLength; ) {
                 dataNames[x] = data.getColumnName(++x);
             }
 
@@ -68,9 +68,9 @@ public class DBService {
 
     /**
      * setData
-     * 
-     * @param sqlQuery String that contains the SQL query that will be made
-     * @return true if the query was sucsessful, false if it wasn't
+     *
+     * @param stmt String that contains the SQL query that will be made
+     * @return true if the query was successful, false if it wasn't
      */
     private boolean setData(PreparedStatement stmt) {
         try {
@@ -79,7 +79,7 @@ public class DBService {
             if (numOfRows > 0)
                 return true;
         } catch (SQLException sqle) {
-            System.out.println("An error occured when using method setData: " + sqle.getMessage());
+            System.out.println("An error occurred when using method setData: " + sqle.getMessage());
         }
         return false;
     }
@@ -99,12 +99,12 @@ public class DBService {
         ArrayList<HashMap<String, String>> list = null;
 
         try {
-            PreparedStatement stmt = conn.prepareStatement("SELECT * FROM faculty WHERE email = ? AND password = ?");  
-            stmt.setString(1,username);
-            stmt.setString(2,"password");  
+            PreparedStatement stmt = conn.prepareStatement("SELECT * FROM faculty WHERE email = ? AND password = ?");
+            stmt.setString(1, username);
+            stmt.setString(2, password);
             list = getData(stmt);
         } catch (SQLException e) {
-            System.out.println("An error occured when sending prepared statement in login method: " + e.getMessage());
+            System.out.println("An error occurred when sending prepared statement in login method: " + e.getMessage());
             return null;
         }
 
@@ -113,7 +113,7 @@ public class DBService {
                 HashMap<String, String> map = list.get(0);
                 return new Faculty(Integer.parseInt(map.get("id")), map.get("fName"), map.get("lName"), map.get("password"), map.get("email"));
             } catch (Exception e) {
-                System.out.println("An error occured when trying to fetch data in login method: " + e.getMessage());
+                System.out.println("An error occurred when trying to fetch data in login method: " + e.getMessage());
             }
         }
 
