@@ -69,13 +69,13 @@ public class LoginGUI extends JFrame implements ActionListener {
             String pwdText;
             userText = usernameField.getText();
             pwdText = passwordField.getText();
-
-            if (userText.equalsIgnoreCase("sjz@it.rit.edu") && pwdText.equalsIgnoreCase("5f47859188a602594556580532e814a3")) {
-                JOptionPane.showMessageDialog(this, "Login Successful.\nWelcome: Steve Zilora");
-            } else if (userText.equalsIgnoreCase("dsb@it.rit.edu") && pwdText.equalsIgnoreCase("f4f6172eb26581952a70d7199bfd2ddb")) {
-                JOptionPane.showMessageDialog(this, "Login Successful.\nWelcome: Dan Bogaard");
-            } else if (userText.equalsIgnoreCase("kdgvks@rit.edu") && pwdText.equalsIgnoreCase("084387d79f1cae0cecd9a8eaccbd23b3")) {
-                JOptionPane.showMessageDialog(this, "Login Successful.\nWelcome: Karen Griffith");
+            
+            Faculty faculty = dbService.login(userText, pwdText);
+            // sjz@it.rit.edu
+            // 5f47859188a602594556580532e814a3
+            if(faculty != null) {
+                System.out.println("Logged in as " + faculty);
+                JOptionPane.showMessageDialog(this, "Login Successful.\nWelcome: " + faculty.getFName() + " " + faculty.getLName());
             } else {
                 JOptionPane.showMessageDialog(this, "Invalid Username or Password");
             }
