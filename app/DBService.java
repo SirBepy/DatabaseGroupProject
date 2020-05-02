@@ -1,4 +1,5 @@
 import java.sql.*;
+import java.util.HashMap;
 import java.util.ArrayList;
 
 public class DBService {
@@ -34,11 +35,10 @@ public class DBService {
      * @param sqlQuery String that contains the SQL query that will be made
      * @return All objects that that query returns
      */
-    private ArrayList<String[]> getData(String sqlQuery) {
-        ArrayList<String[]> toReturn = new ArrayList<>();
+    private ArrayList<HashMap<String, String>> getData(PreparedStatement stmt) {
+        ArrayList<HashMap<String, String>> toReturn = new ArrayList<>();
         try {
-            Statement statement = conn.createStatement();
-            ResultSet rs = statement.executeQuery(sqlQuery);
+            ResultSet rs = stmt.executeQuery();
             ResultSetMetaData data = rs.getMetaData();
 
             // Initializing dataNames so we can use it to get data later on
@@ -50,18 +50,18 @@ public class DBService {
 
             // Creating a bunch of String[] objects to add to the arraylist
             while (rs.next()) {
-                String[] row = new String[colLength];
+                HashMap<String, String> map = new HashMap<>();
+
                 for (int x = 0; x < colLength; x++) {
-                    row[x] = rs.getString(dataNames[x]);
+                    map.put(dataNames[x], rs.getString(dataNames[x]));
                 }
-                toReturn.add(row);
+                toReturn.add(map);
             }
 
             rs.close();
-            statement.close();
+            stmt.close();
         } catch (SQLException sqle) {
             System.out.println("An error occured when using method getData: " + sqle.getMessage());
-            System.exit(1);
         }
         return toReturn;
     }
@@ -72,16 +72,14 @@ public class DBService {
      * @param sqlQuery String that contains the SQL query that will be made
      * @return true if the query was sucsessful, false if it wasn't
      */
-    private boolean setData(String sqlQuery) {
+    private boolean setData(PreparedStatement stmt) {
         try {
-            Statement statement = conn.createStatement();
-            int numOfRows = statement.executeUpdate(sqlQuery);
-            statement.close();
+            int numOfRows = stmt.executeUpdate();
+            stmt.close();
             if (numOfRows > 0)
                 return true;
         } catch (SQLException sqle) {
             System.out.println("An error occured when using method setData: " + sqle.getMessage());
-            System.exit(1);
         }
         return false;
     }
@@ -97,16 +95,28 @@ public class DBService {
         }
     }
 
-    public int login(String username, String password) {
-        ArrayList<String[]> list = getData("SELECT id FROM faculty WHERE email = " + username + " AND password = " + password);
+    public Faculty login(String username, String password) {
+        ArrayList<HashMap<String, String>> list = null;
+
+        try {
+            PreparedStatement stmt = conn.prepareStatement("SELECT * FROM faculty WHERE email = ? AND password = ?");  
+            stmt.setString(1,username);
+            stmt.setString(2,"password");  
+            list = getData(stmt);
+        } catch (SQLException e) {
+            System.out.println("An error occured when sending prepared statement in login method: " + e.getMessage());
+            return null;
+        }
+
         if (list.size() > 0) {
             try {
-                return Integer.parseInt(list.get(0)[0]);
+                HashMap<String, String> map = list.get(0);
+                return new Faculty(Integer.parseInt(map.get("id")), map.get("fName"), map.get("lName"), map.get("password"), map.get("email"));
             } catch (Exception e) {
-                System.out.println("An error occured: " + e.getMessage());
+                System.out.println("An error occured when trying to fetch data in login method: " + e.getMessage());
             }
         }
 
-        return -1;
+        return null;
     }
 }
