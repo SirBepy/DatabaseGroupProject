@@ -119,4 +119,49 @@ public class DBService {
 
         return null;
     }
+
+    public ArrayList<PapersWithKeywords> getPapers() {
+        ArrayList<HashMap<String, String>> papersList = null;
+        ArrayList<HashMap<String, String>> keywordsList = null;
+        ArrayList<PapersWithKeywords> toReturn = new ArrayList<>();
+
+        try {
+            PreparedStatement stmt = conn.prepareStatement("SELECT * FROM papers");
+            papersList = getData(stmt);
+        } catch (SQLException e) {
+            System.out.println("An error occurred when sending prepared statement in login method: " + e.getMessage());
+            return null;
+        }
+
+        try {
+            PreparedStatement stmt = conn.prepareStatement("SELECT * FROM paper_keywords");
+            keywordsList = getData(stmt);
+        } catch (SQLException e) {
+            System.out.println("An error occurred when sending prepared statement in login method: " + e.getMessage());
+            return null;
+        }
+
+        if (papersList.size() > 0) {
+            try {
+                //int id, String title, String text, String citation
+                for(HashMap<String, String> map : papersList) {
+                    PapersWithKeywords paper = new PapersWithKeywords(Integer.parseInt(map.get("id")), map.get("title"), map.get("abstract"), map.get("citation"));
+                    for(int x = 0; x < keywordsList.size(); x++) {
+                        HashMap<String, String> keywordsMap = keywordsList.get(x);
+                        if(keywordsMap.get("id").equals(map.get("id"))) {
+                            paper.addKeyword(keywordsMap.get("keyword"));
+                            keywordsList.remove(x);
+                        }
+                    }
+                    toReturn.add(paper);
+                }
+            } catch (Exception e) {
+                System.out.println("An error occurred when trying to fetch data in login method: " + e.getMessage());
+                e.printStackTrace();
+            }
+        }
+
+        return toReturn;
+    }
 }
+

@@ -1,17 +1,18 @@
-public class Papers {
+import java.util.ArrayList;
+
+public class PapersWithKeywords {
     private int id; // Not null
     private String title;
     private String text;
     private String citation;
+    private ArrayList<String> keywords; // Not null
 
-    public Papers() {
-    }
-
-    public Papers(int id, String title, String text, String citation) {
+    public PapersWithKeywords(int id, String title, String text, String citation) {
         this.id = id;
         this.title = title;
         this.text = text;
         this.citation = citation;
+        keywords = new ArrayList<String>();
     }
 
     public int getId() {
@@ -46,6 +47,20 @@ public class Papers {
         this.citation = citation;
     }
 
+    public void addKeyword(String keyword) {
+        keywords.add(keyword);
+    }
+
+    public String getKeywords() {
+        String toReturn = "";
+
+        for(String keyword : keywords) {
+            toReturn += keyword + ", ";
+        }
+
+        return toReturn.substring(0, toReturn.length() - 2);
+    }
+
     @Override
     public String toString() {
         return "{" +
@@ -53,6 +68,7 @@ public class Papers {
                 ", title='" + getTitle() + "'" +
                 ", text='" + getText() + "'" +
                 ", citation='" + getCitation() + "'" +
+                ", keywords='" + getKeywords() + "'" +
                 "}";
     }
 }
