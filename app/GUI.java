@@ -11,7 +11,7 @@ public class GUI implements ActionListener {
     JFrame loginFrame;
     JFrame dbFrame;
     JFrame tableFrame;
-    JButton loginButton, resetButton, insertButton, saveButton;
+    JButton loginButton, resetButton, insertButton, saveButton, guestButton;
     JTextField usernameField;
     JPasswordField passwordField;
     JCheckBox showPassword;
@@ -43,6 +43,7 @@ public class GUI implements ActionListener {
 
         loginButton = new JButton("Login");
         resetButton = new JButton("Reset");
+        guestButton = new JButton("Login as Guest");
 
         showPassword = new JCheckBox("Show Password");
 
@@ -54,9 +55,11 @@ public class GUI implements ActionListener {
         showPassword.setBounds(185, 100, 150, 30);
         loginButton.setBounds(70, 150, 100, 30);
         resetButton.setBounds(200, 150, 100, 30);
+        guestButton.setBounds(115, 190, 150, 25);
 
         loginButton.addActionListener(this);
         resetButton.addActionListener(this);
+        guestButton.addActionListener(this);
         showPassword.addActionListener(this);
 
         loginFrame.add(usernameLabel);
@@ -66,6 +69,7 @@ public class GUI implements ActionListener {
         loginFrame.add(showPassword);
         loginFrame.add(loginButton);
         loginFrame.add(resetButton);
+        loginFrame.add(guestButton);
 
         loginFrame.pack();
         loginFrame.setVisible(true);
@@ -93,25 +97,28 @@ public class GUI implements ActionListener {
             } else {
                 JOptionPane.showMessageDialog(loginFrame, "Invalid Username or Password");
             }
-        }
-        if (actionEvent.getSource() == resetButton) {
+        } else if (actionEvent.getSource() == resetButton) {
             usernameField.setText("");
             passwordField.setText("");
-        }
-        if (actionEvent.getSource() == showPassword) {
+        } else if (actionEvent.getSource() == showPassword) {
             if (showPassword.isSelected()) {
                 passwordField.setEchoChar((char) 0);
             } else {
                 passwordField.setEchoChar('*');
             }
-        }
-        if (actionEvent.getSource() == insertButton) {
+        } else if (actionEvent.getSource() == insertButton) {
             insertTable();
-        }
-        if (actionEvent.getSource() == saveButton) {
+        } else if (actionEvent.getSource() == saveButton) {
             saveToTable();
             dbWindow();
             tableFrame.setVisible(false);
+        } else if (actionEvent.getSource() == guestButton) {
+            // int id, String fName, String lName, String password, String email
+            user = new Faculty(-1, "Guest", "", "", "");
+            System.out.println("Demo logged in as guest");
+            JOptionPane.showMessageDialog(loginFrame, "Welcome guest!");
+            dbWindow();
+            loginFrame.setVisible(false);
         }
     }
 
@@ -132,17 +139,17 @@ public class GUI implements ActionListener {
         buttonPane.add(insertButton);
         buttonPane.add(Box.createRigidArea(new Dimension(10, 0)));
 
-        ArrayList<PapersWithKeywords> papers = dbService.getPapers();
+        ArrayList<ModifiedPapers> papers = dbService.getPapers();
 
         Object[][] data = new Object[papers.size()][4];
 
         for (int x = 0; x < data.length; x++) {
-            PapersWithKeywords paper = papers.get(x);
-            Object[] row = {paper.getTitle(), paper.getText(), paper.getCitation(), paper.getKeywords()};
+            ModifiedPapers paper = papers.get(x);
+            Object[] row = {paper.getAuthorship(), paper.getTitle(), paper.getText(), paper.getCitation(), paper.getKeywords()};
             data[x] = row;
         }
 
-        String[] columnNames = {"Title", "Abstract", "Citation", "Keywords"};
+        String[] columnNames = {"Author", "Title", "Abstract", "Citation", "Keywords"};
 
         JTable table = new JTable(data, columnNames);
         table.setBounds(10, 50, 1400, 200);
@@ -150,13 +157,14 @@ public class GUI implements ActionListener {
         table.setRowHeight(0, 30);
 
         TableColumnModel columnModel = table.getColumnModel();
-        columnModel.getColumn(0).setPreferredWidth(370);
+        columnModel.getColumn(0).setPreferredWidth(100);
         columnModel.getColumn(1).setPreferredWidth(400);
         columnModel.getColumn(2).setPreferredWidth(400);
         columnModel.getColumn(3).setPreferredWidth(210);
 
         JScrollPane scrollPane = new JScrollPane(table);
         dbFrame.setLayout(new BorderLayout());
+        if(user.getId() != -1)
         dbFrame.add(buttonPane, BorderLayout.NORTH);
         dbFrame.add(table.getTableHeader(), BorderLayout.PAGE_START);
         dbFrame.add(scrollPane, BorderLayout.CENTER);
@@ -230,7 +238,7 @@ public class GUI implements ActionListener {
         String citation = citationTextField.getText();
         String[] keywords = keywordsTextField.getText().split(",");
 
-        PapersWithKeywords paper = new PapersWithKeywords(title, text, citation);
+        ModifiedPapers paper = new ModifiedPapers(title, text, citation);
 
         for(String keyword : keywords) {
             System.out.println(keyword);

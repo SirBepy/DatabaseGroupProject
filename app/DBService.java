@@ -121,10 +121,12 @@ public class DBService {
         return null;
     }
 
-    public ArrayList<PapersWithKeywords> getPapers() {
+    public ArrayList<ModifiedPapers> getPapers() {
         ArrayList<HashMap<String, String>> papersList = null;
         ArrayList<HashMap<String, String>> keywordsList = null;
-        ArrayList<PapersWithKeywords> toReturn = new ArrayList<>();
+        ArrayList<HashMap<String, String>> authorshipList = null;
+
+        ArrayList<ModifiedPapers> toReturn = new ArrayList<>();
 
         try {
             PreparedStatement stmt = conn.prepareStatement("SELECT * FROM papers");
@@ -142,17 +144,40 @@ public class DBService {
             return null;
         }
 
+        try {
+            PreparedStatement stmt = conn
+                    .prepareStatement("SELECT paperId, id, fName, lName FROM authorship LEFT JOIN faculty "
+                            + "ON authorship.facultyid = faculty.id ORDER BY paperId;");
+            authorshipList = getData(stmt);
+        } catch (SQLException e) {
+            System.out.println("An error occurred when sending prepared statement in login method: " + e.getMessage());
+            return null;
+        }
+
+        System.out.println(authorshipList);
+
         if (papersList.size() > 0) {
             try {
-                // int id, String title, String text, String citation
                 for (HashMap<String, String> map : papersList) {
-                    PapersWithKeywords paper = new PapersWithKeywords(Integer.parseInt(map.get("id")), map.get("title"),
+                    ModifiedPapers paper = new ModifiedPapers(Integer.parseInt(map.get("id")), map.get("title"),
                             map.get("abstract"), map.get("citation"));
-                    for (int x = 0; x < keywordsList.size(); x++) {
+                    for (int x = 0; x < keywordsList.size();) {
                         HashMap<String, String> keywordsMap = keywordsList.get(x);
                         if (keywordsMap.get("id").equals(map.get("id"))) {
                             paper.addKeyword(keywordsMap.get("keyword"));
                             keywordsList.remove(x);
+                        } else {
+                            x++;
+                        }
+                    }
+
+                    for(int x = 0; x < authorshipList.size();) {
+                        HashMap<String, String> authorshipMap = authorshipList.get(x);
+                        if (authorshipMap.get("paperId").equals(map.get("id"))) {
+                            paper.addAuthor(authorshipMap.get("fName") + " " + authorshipMap.get("lName"));
+                            authorshipList.remove(x);
+                        } else {
+                            x++;
                         }
                     }
                     toReturn.add(paper);
@@ -166,30 +191,30 @@ public class DBService {
         return toReturn;
     }
 
-    public boolean insertPapersAndKeywords(PapersWithKeywords papersWithKeywords) {
+    public boolean insertPapersAndKeywords(ModifiedPapers ModifiedPapers) {
         try {
             // These first three lines exist because there is no autoincrement in the table
             PreparedStatement idStmt = conn.prepareStatement("SELECT id FROM papers ORDER BY id");
             ArrayList<HashMap<String, String>> list = getData(idStmt);
             int newId = Integer.parseInt(list.get(list.size() - 1).get("id"));
-            papersWithKeywords.setId(++newId);
-            
+            ModifiedPapers.setId(++newId);
+
             // Paper insert
             PreparedStatement stmt1 = conn.prepareStatement("INSERT INTO papers VALUES(?, ?, ?, ?)");
-            stmt1.setInt(1, papersWithKeywords.getId());
-            stmt1.setString(2, papersWithKeywords.getTitle());
-            stmt1.setString(3, papersWithKeywords.getText());
-            stmt1.setString(4, papersWithKeywords.getCitation());
+            stmt1.setInt(1, ModifiedPapers.getId());
+            stmt1.setString(2, ModifiedPapers.getTitle());
+            stmt1.setString(3, ModifiedPapers.getText());
+            stmt1.setString(4, ModifiedPapers.getCitation());
 
             // Keyword insert
             PreparedStatement stmt2 = conn.prepareStatement("INSERT INTO paper_keywords(id, keyword) VALUES(?, ?)");
-            stmt2.setInt(1, papersWithKeywords.getId());
-            stmt2.setString(2, papersWithKeywords.getKeywords());
+            stmt2.setInt(1, ModifiedPapers.getId());
+            stmt2.setString(2, ModifiedPapers.getKeywords());
 
             boolean insert1 = setData(stmt1);
             boolean insert2 = setData(stmt2);
 
-            if(insert1 && insert2) {
+            if (insert1 && insert2) {
                 System.out.println("It all worked");
                 return true;
             }
@@ -201,4 +226,3 @@ public class DBService {
 
     }
 }
-

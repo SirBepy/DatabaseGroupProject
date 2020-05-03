@@ -1,26 +1,24 @@
 import java.util.ArrayList;
 
-public class PapersWithKeywords {
+public class ModifiedPapers {
     private int id; // Not null
     private String title;
     private String text;
     private String citation;
+    private ArrayList<String> authorship;
     private ArrayList<String> keywords; // Not null
 
-    public PapersWithKeywords(int id, String title, String text, String citation) {
+    public ModifiedPapers(int id, String title, String text, String citation) {
         this.id = id;
         this.title = title;
         this.text = text;
         this.citation = citation;
+        authorship = new ArrayList<String>();
         keywords = new ArrayList<String>();
     }
 
-    public PapersWithKeywords(String title, String text, String citation) {
-        this.id = 0;
-        this.title = title;
-        this.text = text;
-        this.citation = citation;
-        keywords = new ArrayList<String>();
+    public ModifiedPapers(String title, String text, String citation) {
+        this(0, title, text, citation);
     }
 
     public int getId() {
@@ -60,10 +58,22 @@ public class PapersWithKeywords {
     }
 
     public String getKeywords() {
+        return listToString(keywords);
+    }
+
+    public void addAuthor(String author) {
+        authorship.add(author);
+    }
+
+    public String getAuthorship() {
+        return listToString(authorship);
+    }
+
+    private String listToString(ArrayList<String> list) {
         String toReturn = "";
 
-        for(String keyword : keywords) {
-            toReturn += keyword + ", ";
+        for(String str : list) {
+            toReturn += str + ", ";
         }
 
         try {
