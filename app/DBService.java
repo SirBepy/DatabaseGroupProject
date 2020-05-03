@@ -44,7 +44,7 @@ public class DBService {
             // Initializing dataNames so we can use it to get data later on
             int colLength = data.getColumnCount();
             String[] dataNames = new String[colLength];
-            for (int x = 0; x < colLength; ) {
+            for (int x = 0; x < colLength;) {
                 dataNames[x] = data.getColumnName(++x);
             }
 
@@ -111,7 +111,8 @@ public class DBService {
         if (list.size() > 0) {
             try {
                 HashMap<String, String> map = list.get(0);
-                return new Faculty(Integer.parseInt(map.get("id")), map.get("fName"), map.get("lName"), map.get("password"), map.get("email"));
+                return new Faculty(Integer.parseInt(map.get("id")), map.get("fName"), map.get("lName"),
+                        map.get("password"), map.get("email"));
             } catch (Exception e) {
                 System.out.println("An error occurred when trying to fetch data in login method: " + e.getMessage());
             }
@@ -143,9 +144,10 @@ public class DBService {
 
         if (papersList.size() > 0) {
             try {
-                //int id, String title, String text, String citation
+                // int id, String title, String text, String citation
                 for (HashMap<String, String> map : papersList) {
-                    PapersWithKeywords paper = new PapersWithKeywords(Integer.parseInt(map.get("id")), map.get("title"), map.get("abstract"), map.get("citation"));
+                    PapersWithKeywords paper = new PapersWithKeywords(Integer.parseInt(map.get("id")), map.get("title"),
+                            map.get("abstract"), map.get("citation"));
                     for (int x = 0; x < keywordsList.size(); x++) {
                         HashMap<String, String> keywordsMap = keywordsList.get(x);
                         if (keywordsMap.get("id").equals(map.get("id"))) {
@@ -162,6 +164,41 @@ public class DBService {
         }
 
         return toReturn;
+    }
+
+    public boolean insertPapersAndKeywords(PapersWithKeywords papersWithKeywords) {
+        try {
+            // These first three lines exist because there is no autoincrement in the table
+            PreparedStatement idStmt = conn.prepareStatement("SELECT id FROM papers ORDER BY id");
+            ArrayList<HashMap<String, String>> list = getData(idStmt);
+            int newId = Integer.parseInt(list.get(list.size() - 1).get("id"));
+            papersWithKeywords.setId(++newId);
+            
+            // Paper insert
+            PreparedStatement stmt1 = conn.prepareStatement("INSERT INTO papers VALUES(?, ?, ?, ?)");
+            stmt1.setInt(1, papersWithKeywords.getId());
+            stmt1.setString(2, papersWithKeywords.getTitle());
+            stmt1.setString(3, papersWithKeywords.getText());
+            stmt1.setString(4, papersWithKeywords.getCitation());
+
+            // Keyword insert
+            PreparedStatement stmt2 = conn.prepareStatement("INSERT INTO paper_keywords(id, keyword) VALUES(?, ?)");
+            stmt2.setInt(1, papersWithKeywords.getId());
+            stmt2.setString(2, papersWithKeywords.getKeywords());
+
+            boolean insert1 = setData(stmt1);
+            boolean insert2 = setData(stmt2);
+
+            if(insert1 && insert2) {
+                System.out.println("It all worked");
+                return true;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        System.out.println("Didnt really all work...");
+        return false;
+
     }
 }
 

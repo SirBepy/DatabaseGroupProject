@@ -9,6 +9,8 @@ import java.util.ArrayList;
 public class GUI implements ActionListener {
     // Global variables necessary for logging in
     JFrame loginFrame;
+    JFrame dbFrame;
+    JFrame tableFrame;
     JButton loginButton, resetButton, insertButton, saveButton;
     JTextField usernameField;
     JPasswordField passwordField;
@@ -108,14 +110,16 @@ public class GUI implements ActionListener {
         }
         if (actionEvent.getSource() == saveButton) {
             saveToTable();
+            dbWindow();
+            tableFrame.setVisible(false);
         }
     }
 
     public void dbWindow() {
-        JFrame frame = new JFrame();
-//        frame.setLocationRelativeTo(null);
-        frame.setTitle("Viewing the Database");
-        frame.setPreferredSize(new Dimension(1500, 350));
+        dbFrame = new JFrame();
+//        dbFrame.setLocationRelativeTo(null);
+        dbFrame.setTitle("Viewing the Database");
+        dbFrame.setPreferredSize(new Dimension(1500, 350));
 
         insertButton = new JButton("Insert New");
         insertButton.setPreferredSize(new Dimension(100, 20));
@@ -152,22 +156,22 @@ public class GUI implements ActionListener {
         columnModel.getColumn(3).setPreferredWidth(210);
 
         JScrollPane scrollPane = new JScrollPane(table);
-        frame.setLayout(new BorderLayout());
-        frame.add(buttonPane, BorderLayout.NORTH);
-        frame.add(table.getTableHeader(), BorderLayout.PAGE_START);
-        frame.add(scrollPane, BorderLayout.CENTER);
+        dbFrame.setLayout(new BorderLayout());
+        dbFrame.add(buttonPane, BorderLayout.NORTH);
+        dbFrame.add(table.getTableHeader(), BorderLayout.PAGE_START);
+        dbFrame.add(scrollPane, BorderLayout.CENTER);
 
-        frame.pack();
-        frame.setVisible(true);
-        frame.setResizable(false);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        dbFrame.pack();
+        dbFrame.setVisible(true);
+        dbFrame.setResizable(false);
+        dbFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 
     public void insertTable() {
-        JFrame frame = new JFrame();
-        frame.setLocationRelativeTo(null);
-        frame.setTitle("Insert into Database");
-        frame.setPreferredSize(new Dimension(500, 350));
+        tableFrame = new JFrame();
+        tableFrame.setLocationRelativeTo(null);
+        tableFrame.setTitle("Insert into Database");
+        tableFrame.setPreferredSize(new Dimension(500, 350));
 
         saveButton = new JButton("Save");
         saveButton.setPreferredSize(new Dimension(70, 20));
@@ -210,27 +214,36 @@ public class GUI implements ActionListener {
         fieldsPanel.add(keywordsLabel);
         fieldsPanel.add(keywordsTextField);
 
-        frame.setLayout(new BorderLayout());
-        frame.add(buttonPane, BorderLayout.SOUTH);
-        frame.add(fieldsPanel, BorderLayout.CENTER);
+        tableFrame.setLayout(new BorderLayout());
+        tableFrame.add(buttonPane, BorderLayout.SOUTH);
+        tableFrame.add(fieldsPanel, BorderLayout.CENTER);
 
-        frame.pack();
-        frame.setVisible(true);
-        frame.setResizable(false);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        tableFrame.pack();
+        tableFrame.setVisible(true);
+        tableFrame.setResizable(false);
+        tableFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 
     public void saveToTable() {
         String title = titleTextField.getText();
         String text = textField.getText();
         String citation = citationTextField.getText();
-        String keywords = keywordsTextField.getText();
+        String[] keywords = keywordsTextField.getText().split(",");
 
-        System.out.println(String.format("INSERT: %s %s %s %s", title, text, citation, keywords));
-        String queryPapers = "INSERT INTO papers(title, abstract, citation) VALUES(" + title + ", " + ", " + text + ", " + citation + ");";
-        String queryPaperKeywords = "INSERT INTO paper_keywords(keyword) VALUES(" + keywords + ");";
-        System.out.println(queryPapers);
-        System.out.println(queryPaperKeywords);
+        PapersWithKeywords paper = new PapersWithKeywords(title, text, citation);
+
+        for(String keyword : keywords) {
+            System.out.println(keyword);
+            if(keyword.charAt(0) == ' ') {
+                keyword.substring(1, keyword.length());
+            }
+            if(keyword.charAt(keyword.length() - 1) == ' ') {
+                keyword.substring(0, keyword.length() - 1);
+            }
+            paper.addKeyword(keyword);
+        }
+
+        dbService.insertPapersAndKeywords(paper);
     }
 
 }

@@ -15,6 +15,14 @@ public class PapersWithKeywords {
         keywords = new ArrayList<String>();
     }
 
+    public PapersWithKeywords(String title, String text, String citation) {
+        this.id = 0;
+        this.title = title;
+        this.text = text;
+        this.citation = citation;
+        keywords = new ArrayList<String>();
+    }
+
     public int getId() {
         return this.id;
     }
@@ -58,7 +66,11 @@ public class PapersWithKeywords {
             toReturn += keyword + ", ";
         }
 
-        return toReturn.substring(0, toReturn.length() - 2);
+        try {
+            return toReturn.substring(0, toReturn.length() - 2);
+        } catch (Exception e) {
+            return toReturn;
+        }
     }
 
     @Override
