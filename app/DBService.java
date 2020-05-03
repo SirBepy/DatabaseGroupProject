@@ -10,7 +10,7 @@ public class DBService {
         String serverName = "localhost";
         String mydatabase = "FacResearchDB";
         String username = "root";
-        String password = "1234";
+        String password = "SumanSQL31334!";
 
         String url = "jdbc:mysql://" + serverName + "/" + mydatabase + "?useSSL=false";
 
@@ -61,7 +61,7 @@ public class DBService {
             rs.close();
             stmt.close();
         } catch (SQLException sqle) {
-            System.out.println("An error occured when using method getData: " + sqle.getMessage());
+            System.out.println("An error occurred when using method getData: " + sqle.getMessage());
         }
         return toReturn;
     }
@@ -144,11 +144,11 @@ public class DBService {
         if (papersList.size() > 0) {
             try {
                 //int id, String title, String text, String citation
-                for(HashMap<String, String> map : papersList) {
+                for (HashMap<String, String> map : papersList) {
                     PapersWithKeywords paper = new PapersWithKeywords(Integer.parseInt(map.get("id")), map.get("title"), map.get("abstract"), map.get("citation"));
-                    for(int x = 0; x < keywordsList.size(); x++) {
+                    for (int x = 0; x < keywordsList.size(); x++) {
                         HashMap<String, String> keywordsMap = keywordsList.get(x);
-                        if(keywordsMap.get("id").equals(map.get("id"))) {
+                        if (keywordsMap.get("id").equals(map.get("id"))) {
                             paper.addKeyword(keywordsMap.get("keyword"));
                             keywordsList.remove(x);
                         }

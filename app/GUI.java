@@ -1,4 +1,5 @@
 import javax.swing.*;
+import javax.swing.table.TableColumnModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -107,23 +108,29 @@ public class GUI implements ActionListener {
         JFrame frame = new JFrame();
         frame.setLocationRelativeTo(null);
         frame.setTitle("Viewing the Database");
-        frame.setPreferredSize(new Dimension(700, 350));
+        frame.setPreferredSize(new Dimension(1500, 350));
 
         ArrayList<PapersWithKeywords> papers = dbService.getPapers();
 
         Object[][] data = new Object[papers.size()][4];
 
-        for(int x = 0; x < data.length; x++) {
+        for (int x = 0; x < data.length; x++) {
             PapersWithKeywords paper = papers.get(x);
             Object[] row = {paper.getTitle(), paper.getText(), paper.getCitation(), paper.getKeywords()};
             data[x] = row;
         }
 
 
-
-        String[] columnNames = { "Title", "Text", "Citation", "Keywords"};
+        String[] columnNames = {"Title", "Abstract", "Citation", "Keywords"};
 
         JTable table = new JTable(data, columnNames);
+        table.setRowHeight(40);
+        table.setRowHeight(0, 30);
+        TableColumnModel columnModel = table.getColumnModel();
+        columnModel.getColumn(0).setPreferredWidth(370);
+        columnModel.getColumn(1).setPreferredWidth(400);
+        columnModel.getColumn(2).setPreferredWidth(400);
+        columnModel.getColumn(3).setPreferredWidth(210);
         JScrollPane scrollPane = new JScrollPane(table);
         frame.setLayout(new BorderLayout());
         frame.add(table.getTableHeader(), BorderLayout.PAGE_START);
