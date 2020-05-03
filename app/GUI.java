@@ -13,9 +13,10 @@ public class GUI implements ActionListener {
     JTextField usernameField;
     JPasswordField passwordField;
     JCheckBox showPassword;
-
+    JLabel titleLabel, textLabel, citationLabel, keywordsLabel;
+    JTextField titleTextField, citationTextField, keywordsTextField;
+    JTextArea textField;
     DBService dbService;
-
     Faculty user;
 
     public GUI(DBService dbService) {
@@ -112,7 +113,7 @@ public class GUI implements ActionListener {
 
     public void dbWindow() {
         JFrame frame = new JFrame();
-        frame.setLocationRelativeTo(null);
+//        frame.setLocationRelativeTo(null);
         frame.setTitle("Viewing the Database");
         frame.setPreferredSize(new Dimension(1500, 350));
 
@@ -169,7 +170,7 @@ public class GUI implements ActionListener {
         frame.setPreferredSize(new Dimension(500, 350));
 
         saveButton = new JButton("Save");
-        saveButton.setPreferredSize(new Dimension(100, 20));
+        saveButton.setPreferredSize(new Dimension(70, 20));
         saveButton.addActionListener(this);
 
         JPanel buttonPane = new JPanel();
@@ -179,8 +180,39 @@ public class GUI implements ActionListener {
         buttonPane.add(saveButton);
         buttonPane.add(Box.createRigidArea(new Dimension(10, 0)));
 
+        titleLabel = new JLabel("Title: ");
+        titleTextField = new JTextField();
+        textLabel = new JLabel("Abstract: ");
+        textField = new JTextArea();
+        textField.setLineWrap(true);
+        citationLabel = new JLabel("Citation: ");
+        citationTextField = new JTextField();
+        keywordsLabel = new JLabel("Keywords: ");
+        keywordsTextField = new JTextField();
+
+        titleLabel.setBounds(10, 30, 100, 30);
+        titleTextField.setBounds(100, 40, 250, 20);
+        textLabel.setBounds(10, 60, 100, 30);
+        textField.setBounds(100, 70, 250, 60);
+        citationLabel.setBounds(10, 150, 100, 30);
+        citationTextField.setBounds(100, 160, 250, 20);
+        keywordsLabel.setBounds(10, 180, 100, 30);
+        keywordsTextField.setBounds(100, 190, 250, 20);
+
+        JPanel fieldsPanel = new JPanel();
+        fieldsPanel.setLayout(null);
+        fieldsPanel.add(titleLabel);
+        fieldsPanel.add(titleTextField);
+        fieldsPanel.add(textLabel);
+        fieldsPanel.add(textField);
+        fieldsPanel.add(citationLabel);
+        fieldsPanel.add(citationTextField);
+        fieldsPanel.add(keywordsLabel);
+        fieldsPanel.add(keywordsTextField);
+
         frame.setLayout(new BorderLayout());
-        frame.add(buttonPane, BorderLayout.NORTH);
+        frame.add(buttonPane, BorderLayout.SOUTH);
+        frame.add(fieldsPanel, BorderLayout.CENTER);
 
         frame.pack();
         frame.setVisible(true);
@@ -188,6 +220,17 @@ public class GUI implements ActionListener {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 
-    public void saveToTable(){}
+    public void saveToTable() {
+        String title = titleTextField.getText();
+        String text = textField.getText();
+        String citation = citationTextField.getText();
+        String keywords = keywordsTextField.getText();
+
+        System.out.println(String.format("INSERT: %s %s %s %s", title, text, citation, keywords));
+        String queryPapers = "INSERT INTO papers(title, abstract, citation) VALUES(" + title + ", " + ", " + text + ", " + citation + ");";
+        String queryPaperKeywords = "INSERT INTO paper_keywords(keyword) VALUES(" + keywords + ");";
+        System.out.println(queryPapers);
+        System.out.println(queryPaperKeywords);
+    }
 
 }
