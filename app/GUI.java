@@ -9,7 +9,7 @@ import java.util.ArrayList;
 public class GUI implements ActionListener {
     // Global variables necessary for logging in
     JFrame loginFrame;
-    JButton loginButton, resetButton;
+    JButton loginButton, resetButton, insertButton, saveButton;
     JTextField usernameField;
     JPasswordField passwordField;
     JCheckBox showPassword;
@@ -102,6 +102,12 @@ public class GUI implements ActionListener {
                 passwordField.setEchoChar('*');
             }
         }
+        if (actionEvent.getSource() == insertButton) {
+            insertTable();
+        }
+        if (actionEvent.getSource() == saveButton) {
+            saveToTable();
+        }
     }
 
     public void dbWindow() {
@@ -109,6 +115,17 @@ public class GUI implements ActionListener {
         frame.setLocationRelativeTo(null);
         frame.setTitle("Viewing the Database");
         frame.setPreferredSize(new Dimension(1500, 350));
+
+        insertButton = new JButton("Insert New");
+        insertButton.setPreferredSize(new Dimension(100, 20));
+        insertButton.addActionListener(this);
+
+        JPanel buttonPane = new JPanel();
+        buttonPane.setLayout(new BoxLayout(buttonPane, BoxLayout.LINE_AXIS));
+        buttonPane.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        buttonPane.add(Box.createHorizontalGlue());
+        buttonPane.add(insertButton);
+        buttonPane.add(Box.createRigidArea(new Dimension(10, 0)));
 
         ArrayList<PapersWithKeywords> papers = dbService.getPapers();
 
@@ -120,19 +137,22 @@ public class GUI implements ActionListener {
             data[x] = row;
         }
 
-
         String[] columnNames = {"Title", "Abstract", "Citation", "Keywords"};
 
         JTable table = new JTable(data, columnNames);
+        table.setBounds(10, 50, 1400, 200);
         table.setRowHeight(40);
         table.setRowHeight(0, 30);
+
         TableColumnModel columnModel = table.getColumnModel();
         columnModel.getColumn(0).setPreferredWidth(370);
         columnModel.getColumn(1).setPreferredWidth(400);
         columnModel.getColumn(2).setPreferredWidth(400);
         columnModel.getColumn(3).setPreferredWidth(210);
+
         JScrollPane scrollPane = new JScrollPane(table);
         frame.setLayout(new BorderLayout());
+        frame.add(buttonPane, BorderLayout.NORTH);
         frame.add(table.getTableHeader(), BorderLayout.PAGE_START);
         frame.add(scrollPane, BorderLayout.CENTER);
 
@@ -141,5 +161,33 @@ public class GUI implements ActionListener {
         frame.setResizable(false);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
+
+    public void insertTable() {
+        JFrame frame = new JFrame();
+        frame.setLocationRelativeTo(null);
+        frame.setTitle("Insert into Database");
+        frame.setPreferredSize(new Dimension(500, 350));
+
+        saveButton = new JButton("Save");
+        saveButton.setPreferredSize(new Dimension(100, 20));
+        saveButton.addActionListener(this);
+
+        JPanel buttonPane = new JPanel();
+        buttonPane.setLayout(new BoxLayout(buttonPane, BoxLayout.LINE_AXIS));
+        buttonPane.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        buttonPane.add(Box.createHorizontalGlue());
+        buttonPane.add(saveButton);
+        buttonPane.add(Box.createRigidArea(new Dimension(10, 0)));
+
+        frame.setLayout(new BorderLayout());
+        frame.add(buttonPane, BorderLayout.NORTH);
+
+        frame.pack();
+        frame.setVisible(true);
+        frame.setResizable(false);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    }
+
+    public void saveToTable(){}
 
 }
