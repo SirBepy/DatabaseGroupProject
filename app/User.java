@@ -1,19 +1,19 @@
-public class Faculty {
+public class User {
     private int id; // Not null
     private String fName;
     private String lName;
-    private String password;
     private String email;
+    private String role;
 
-    public Faculty() {
+    public User() {
     }
 
-    public Faculty(int id, String fName, String lName, String password, String email) {
+    public User(int id, String fName, String lName, String email, String role) {
         this.id = id;
         this.fName = fName;
         this.lName = lName;
-        this.password = password;
         this.email = email;
+        this.role = role;
     }
 
     public int getId() {
@@ -40,14 +40,6 @@ public class Faculty {
         this.lName = lName;
     }
 
-    public String getPassword() {
-        return this.password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
     public String getEmail() {
         return this.email;
     }
@@ -56,14 +48,22 @@ public class Faculty {
         this.email = email;
     }
 
+    public String getRole() {
+        return this.role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
+
     @Override
     public String toString() {
         return "{" +
             " id='" + getId() + "'" +
             ", fName='" + getFName() + "'" +
             ", lName='" + getLName() + "'" +
-            ", password='" + getPassword() + "'" +
             ", email='" + getEmail() + "'" +
+            ", role='" + getRole() + "'" +
             "}";
     }
 }

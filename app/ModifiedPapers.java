@@ -61,6 +61,10 @@ public class ModifiedPapers {
         return listToString(keywords);
     }
 
+    public ArrayList<String> getKeywordsList() {
+        return keywords;
+    }
+
     public void addAuthor(String author) {
         authorship.add(author);
     }
