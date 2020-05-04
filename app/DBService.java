@@ -10,7 +10,7 @@ public class DBService {
         String serverName = "localhost";
         String mydatabase = "FacResearchDB";
         String username = "root";
-        String password = "SumanSQL31334!";
+        String password = "1234";
 
         String url = "jdbc:mysql://" + serverName + "/" + mydatabase + "?useSSL=false";
 
