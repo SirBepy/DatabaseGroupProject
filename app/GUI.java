@@ -18,7 +18,6 @@ public class GUI implements ActionListener {
             reqProfTextField, usernameField;
     private JTextArea textField, detailsTextField;
 
-
     // Other necessary variables
     private DBService dbService;
     private User user;
@@ -133,12 +132,12 @@ public class GUI implements ActionListener {
         } else if (actionEvent.getSource() == okButton) {
             requestFrame.setVisible(false);
         } else if (actionEvent.getSource() == sendButton) {
-            if(reqProfTextField.getText().equals(user.getEmail())) {
+            if (reqProfTextField.getText().equals(user.getEmail())) {
                 JOptionPane.showMessageDialog(loginFrame, "Cannot send request to self!");
             } else {
 
                 boolean bool = dbService.postRequest(reqProfTextField.getText(), new SpeakingRequest(user.getId(), requestTextField.getText(), detailsTextField.getText()));
-                if(!bool) {
+                if (!bool) {
                     JOptionPane.showMessageDialog(null, "No faculty member with that email!");
                 } else {
                     JOptionPane.showMessageDialog(null, "Request sent!");
@@ -171,17 +170,16 @@ public class GUI implements ActionListener {
 
         for (int x = 0; x < data.length; x++) {
             ModifiedPapers paper = papers.get(x);
-            Object[] row = { paper.getAuthorship(), paper.getTitle(), paper.getText(), paper.getCitation(),
-                    paper.getKeywords() };
+            Object[] row = {paper.getAuthorship(), paper.getTitle(), paper.getText(), paper.getCitation(),
+                    paper.getKeywords()};
             data[x] = row;
         }
 
-        String[] columnNames = { "Author", "Title", "Text", "Citation", "Keywords" };
+        String[] columnNames = {"Author", "Title", "Text", "Citation", "Keywords"};
 
         JTable table = new JTable(data, columnNames);
         table.setBounds(10, 50, 1400, 200);
         table.setRowHeight(40);
-        table.setRowHeight(0, 30);
 
         TableColumnModel columnModel = table.getColumnModel();
         columnModel.getColumn(0).setPreferredWidth(100);
@@ -217,13 +215,11 @@ public class GUI implements ActionListener {
         dbFrame.pack();
         dbFrame.setVisible(true);
         dbFrame.setResizable(false);
-
         dbFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 
     public void insertTable() {
         tableFrame = new JFrame();
-
         startJFrameSettings(tableFrame, "Insert into Database", 500, 350);
 
         saveButton = new JButton("Save");
@@ -269,7 +265,6 @@ public class GUI implements ActionListener {
 
         endJFrameSettings(tableFrame, fieldsPanel);
         tableFrame.add(buttonPane, BorderLayout.SOUTH);
-
     }
 
     public void saveToTable() {
@@ -331,21 +326,20 @@ public class GUI implements ActionListener {
         fieldsPanel.add(sendButton);
 
         endJFrameSettings(requestFrame, fieldsPanel);
-
     }
 
     public void viewRequests() {
-        requestFrame = new JFrame();
+        requestFrame = new JFrame("View Requests");
 
         JPanel fieldsPanel = new JPanel();
         fieldsPanel.setLayout(null);
-        String[] columnNames = { "Name", "Title", "Description", "Email" };
+        String[] columnNames = {"Name", "Title", "Description", "Email"};
 
         Object[][] data = new Object[requests.size()][columnNames.length];
 
         for (int x = 0; x < data.length; x++) {
             SpeakingRequest request = requests.get(x);
-            Object[] row = { request.getName(), request.getTitle(), request.getDescription(), request.getEmail()};
+            Object[] row = {request.getName(), request.getTitle(), request.getDescription(), request.getEmail()};
             data[x] = row;
         }
 
@@ -362,9 +356,7 @@ public class GUI implements ActionListener {
 
         JScrollPane scrollPane = new JScrollPane(table);
 
-
         endJFrameSettings(requestFrame, scrollPane);
-
     }
 
     private void endJFrameSettings(JFrame frame, JPanel panel) {

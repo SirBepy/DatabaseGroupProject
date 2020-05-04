@@ -10,7 +10,7 @@ public class DBService {
         String serverName = "localhost";
         String mydatabase = "FacResearchDB";
         String username = "root";
-        String password = "1234";
+        String password = "SumanSQL31334!";
 
         String url = "jdbc:mysql://" + serverName + "/" + mydatabase + "?useSSL=false";
 
@@ -44,7 +44,7 @@ public class DBService {
             // Initializing dataNames so we can use it to get data later on
             int colLength = data.getColumnCount();
             String[] dataNames = new String[colLength];
-            for (int x = 0; x < colLength;) {
+            for (int x = 0; x < colLength; ) {
                 dataNames[x] = data.getColumnName(++x);
             }
 
@@ -159,7 +159,7 @@ public class DBService {
                 for (HashMap<String, String> map : papersList) {
                     ModifiedPapers paper = new ModifiedPapers(Integer.parseInt(map.get("id")), map.get("title"),
                             map.get("abstract"), map.get("citation"));
-                    for (int x = 0; x < keywordsList.size();) {
+                    for (int x = 0; x < keywordsList.size(); ) {
                         HashMap<String, String> keywordsMap = keywordsList.get(x);
                         if (keywordsMap.get("id").equals(map.get("id"))) {
                             paper.addKeyword(keywordsMap.get("keyword"));
@@ -169,7 +169,7 @@ public class DBService {
                         }
                     }
 
-                    for (int x = 0; x < authorshipList.size();) {
+                    for (int x = 0; x < authorshipList.size(); ) {
                         HashMap<String, String> authorshipMap = authorshipList.get(x);
                         if (authorshipMap.get("paperId").equals(map.get("id"))) {
                             paper.addAuthor(authorshipMap.get("fName") + " " + authorshipMap.get("lName"));
@@ -271,7 +271,7 @@ public class DBService {
             PreparedStatement stmt = conn.prepareStatement("SELECT id FROM user WHERE role = 'FACULTY' AND email = ? ");
             stmt.setString(1, email);
             ArrayList<HashMap<String, String>> list = getData(stmt);
-            if(list.size() != 0) {
+            if (list.size() != 0) {
                 receiverid = Integer.parseInt(list.get(0).get("id"));
             } else {
                 System.out.println("No faculty members found with that email");

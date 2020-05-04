@@ -76,7 +76,7 @@ public class ModifiedPapers {
     private String listToString(ArrayList<String> list) {
         String toReturn = "";
 
-        for(String str : list) {
+        for (String str : list) {
             toReturn += str + ", ";
         }
 
