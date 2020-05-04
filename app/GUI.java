@@ -149,7 +149,7 @@ public class GUI implements ActionListener {
 
     public void dbWindow() {
         dbFrame = new JFrame();
-        startJFrameSettings(dbFrame, "Viewing the Database", 1500, 350);
+        startJFrameSettings(dbFrame, "Viewing the Database", 1500, 1000);
 
         insertButton = new JButton("Insert New");
         insertButton.setPreferredSize(new Dimension(130, 20));
@@ -165,8 +165,11 @@ public class GUI implements ActionListener {
         buttonPane.add(Box.createHorizontalGlue());
 
         ArrayList<ModifiedPapers> papers = dbService.fetchPapers();
+        
+        String[] columnNames = {"Author", "Title", "Text", "Citation", "Keywords"};
 
-        Object[][] data = new Object[papers.size()][4];
+
+        Object[][] data = new Object[papers.size()][columnNames.length];
 
         for (int x = 0; x < data.length; x++) {
             ModifiedPapers paper = papers.get(x);
@@ -175,17 +178,22 @@ public class GUI implements ActionListener {
             data[x] = row;
         }
 
-        String[] columnNames = {"Author", "Title", "Text", "Citation", "Keywords"};
 
         JTable table = new JTable(data, columnNames);
-        table.setBounds(10, 50, 1400, 200);
-        table.setRowHeight(40);
+        table.setRowHeight(300);
+        resizeRows(table);
 
         TableColumnModel columnModel = table.getColumnModel();
         columnModel.getColumn(0).setPreferredWidth(100);
         columnModel.getColumn(1).setPreferredWidth(400);
         columnModel.getColumn(2).setPreferredWidth(400);
         columnModel.getColumn(3).setPreferredWidth(210);
+        columnModel.getColumn(0).setCellRenderer(new TextTableRenderer()); 
+        columnModel.getColumn(1).setCellRenderer(new TextTableRenderer()); 
+        columnModel.getColumn(2).setCellRenderer(new TextTableRenderer()); 
+        columnModel.getColumn(3).setCellRenderer(new TextTableRenderer()); 
+        columnModel.getColumn(4).setCellRenderer(new TextTableRenderer()); 
+
 
         JScrollPane scrollPane = new JScrollPane(table);
 
@@ -344,15 +352,17 @@ public class GUI implements ActionListener {
         }
 
         JTable table = new JTable(data, columnNames);
-        table.setBounds(15, 50, 1400, 15);
-        table.setRowHeight(40);
-        table.setRowHeight(0, 30);
+        table.setRowHeight(300);
 
         TableColumnModel columnModel = table.getColumnModel();
         columnModel.getColumn(0).setPreferredWidth(100);
         columnModel.getColumn(1).setPreferredWidth(400);
         columnModel.getColumn(2).setPreferredWidth(400);
         columnModel.getColumn(3).setPreferredWidth(210);
+        columnModel.getColumn(0).setCellRenderer(new TextTableRenderer()); 
+        columnModel.getColumn(1).setCellRenderer(new TextTableRenderer()); 
+        columnModel.getColumn(2).setCellRenderer(new TextTableRenderer()); 
+        columnModel.getColumn(3).setCellRenderer(new TextTableRenderer()); 
 
         JScrollPane scrollPane = new JScrollPane(table);
 
@@ -377,6 +387,20 @@ public class GUI implements ActionListener {
         frame.setTitle(title);
         frame.setLocationRelativeTo(null);
         frame.setPreferredSize(new Dimension(height, width));
+    }
+
+    private void resizeRows(JTable table) {
+        for (int row = 0; row < table.getRowCount(); row++)
+        {
+            int rowHeight = table.getRowHeight();
+            
+            for (int column = 0; column < table.getColumnCount(); column++)
+            {
+                int newHeight = ("" + table.getValueAt(row, column)).length()/4;
+                rowHeight = Math.max(rowHeight, newHeight);
+            }
+            table.setRowHeight(row, rowHeight);
+        }
     }
 
 }
