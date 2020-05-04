@@ -10,7 +10,7 @@ public class DBService {
         String serverName = "localhost";
         String mydatabase = "FacResearchDB";
         String username = "root";
-        String password = "1234";
+        String password = "SumanSQL31334!";
 
         String url = "jdbc:mysql://" + serverName + "/" + mydatabase + "?useSSL=false";
 
@@ -221,7 +221,7 @@ public class DBService {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        System.out.println("Didnt really all work...");
+        System.out.println("Didn't really all work...");
         return false;
 
     }

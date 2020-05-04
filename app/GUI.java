@@ -1,23 +1,23 @@
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.table.TableColumnModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.print.Paper;
 import java.util.ArrayList;
 
 public class GUI implements ActionListener {
     // Global variables necessary for logging in
-    JFrame loginFrame;
+    JFrame loginFrame, requestFrame;
     JFrame dbFrame;
     JFrame tableFrame;
-    JButton loginButton, resetButton, insertButton, saveButton, guestButton;
+    JButton loginButton, resetButton, insertButton, saveButton, guestButton, notificationButton, okButton, requestButton, sendButton;
     JTextField usernameField;
     JPasswordField passwordField;
     JCheckBox showPassword;
-    JLabel titleLabel, textLabel, citationLabel, keywordsLabel;
-    JTextField titleTextField, citationTextField, keywordsTextField;
-    JTextArea textField;
+    JLabel titleLabel, textLabel, citationLabel, keywordsLabel, requestLabel, detailsLabel, reqByLabel, reqProfLabel;
+    JTextField titleTextField, citationTextField, keywordsTextField, requestTextField, reqByTextField, reqProfTextField;
+    JTextArea textField, detailsTextField;
     DBService dbService;
     Faculty user;
 
@@ -30,7 +30,7 @@ public class GUI implements ActionListener {
         JLabel usernameLabel, passwordLabel;
         loginFrame = new JFrame("Login Page");
         loginFrame.setLocationRelativeTo(null);
-        loginFrame.setPreferredSize(new Dimension(400, 250));
+        loginFrame.setPreferredSize(new Dimension(400, 300));
 
         JPanel firstPanel = new JPanel();
         firstPanel.setLayout(new GridLayout(3, 2));
@@ -119,6 +119,14 @@ public class GUI implements ActionListener {
             JOptionPane.showMessageDialog(loginFrame, "Welcome guest!");
             dbWindow();
             loginFrame.setVisible(false);
+        } else if (actionEvent.getSource() == notificationButton) {
+            viewRequests();
+        } else if (actionEvent.getSource() == okButton) {
+            requestFrame.setVisible(false);
+        } else if (actionEvent.getSource() == requestButton) {
+            requestSpeaker();
+        } else if (actionEvent.getSource() == sendButton) {
+            // send notification
         }
     }
 
@@ -132,12 +140,29 @@ public class GUI implements ActionListener {
         insertButton.setPreferredSize(new Dimension(100, 20));
         insertButton.addActionListener(this);
 
+        notificationButton = new JButton("View Requests");
+        notificationButton.setPreferredSize(new Dimension(150, 20));
+        notificationButton.addActionListener(this);
+
         JPanel buttonPane = new JPanel();
         buttonPane.setLayout(new BoxLayout(buttonPane, BoxLayout.LINE_AXIS));
         buttonPane.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         buttonPane.add(Box.createHorizontalGlue());
+        buttonPane.add(notificationButton);
+        buttonPane.add(Box.createRigidArea(new Dimension(10, 0)));
         buttonPane.add(insertButton);
         buttonPane.add(Box.createRigidArea(new Dimension(10, 0)));
+
+        requestButton = new JButton("Request Speaker");
+        requestButton.setPreferredSize(new Dimension(160, 20));
+        requestButton.addActionListener(this);
+
+        JPanel requestPane = new JPanel();
+        requestPane.setLayout(new BoxLayout(requestPane, BoxLayout.LINE_AXIS));
+        requestPane.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        requestPane.add(Box.createHorizontalGlue());
+        requestPane.add(requestButton);
+        requestPane.add(Box.createRigidArea(new Dimension(10, 0)));
 
         ArrayList<ModifiedPapers> papers = dbService.getPapers();
 
@@ -164,8 +189,10 @@ public class GUI implements ActionListener {
 
         JScrollPane scrollPane = new JScrollPane(table);
         dbFrame.setLayout(new BorderLayout());
-        if(user.getId() != -1)
-        dbFrame.add(buttonPane, BorderLayout.NORTH);
+        if (user.getId() != -1)
+            dbFrame.add(buttonPane, BorderLayout.NORTH);
+        else
+            dbFrame.add(requestPane, BorderLayout.NORTH);
         dbFrame.add(table.getTableHeader(), BorderLayout.PAGE_START);
         dbFrame.add(scrollPane, BorderLayout.CENTER);
 
@@ -240,12 +267,12 @@ public class GUI implements ActionListener {
 
         ModifiedPapers paper = new ModifiedPapers(title, text, citation);
 
-        for(String keyword : keywords) {
+        for (String keyword : keywords) {
             System.out.println(keyword);
-            if(keyword.charAt(0) == ' ') {
+            if (keyword.charAt(0) == ' ') {
                 keyword.substring(1, keyword.length());
             }
-            if(keyword.charAt(keyword.length() - 1) == ' ') {
+            if (keyword.charAt(keyword.length() - 1) == ' ') {
                 keyword.substring(0, keyword.length() - 1);
             }
             paper.addKeyword(keyword);
@@ -253,5 +280,110 @@ public class GUI implements ActionListener {
 
         dbService.insertPapersAndKeywords(paper);
     }
+
+    public void requestSpeaker() {
+        requestFrame = new JFrame();
+        requestFrame.setLocationRelativeTo(null);
+        requestFrame.setTitle("Requests");
+        requestFrame.setPreferredSize(new Dimension(480, 300));
+
+        reqProfLabel = new JLabel("Requesting Professor: ");
+        reqProfTextField = new JTextField();
+        requestLabel = new JLabel("Request Title: ");
+        requestTextField = new JTextField();
+        detailsLabel = new JLabel("Request Details: ");
+        detailsTextField = new JTextArea();
+        detailsTextField.setLineWrap(true);
+        reqByLabel = new JLabel("Request by: ");
+        reqByTextField = new JTextField();
+
+        sendButton = new JButton("Send");
+        sendButton.addActionListener(this);
+
+        reqProfLabel.setBounds(10, 10, 150, 30);
+        reqProfTextField.setBounds(160, 10, 250, 20);
+
+        requestLabel.setBounds(10, 50, 100, 30);
+        requestTextField.setBounds(160, 50, 250, 20);
+
+        detailsLabel.setBounds(10, 90, 100, 30);
+        detailsTextField.setBounds(160, 90, 250, 60);
+
+        reqByLabel.setBounds(10, 170, 100, 30);
+        reqByTextField.setBounds(160, 170, 250, 20);
+
+        sendButton.setBounds(190, 210, 70, 20);
+
+        JPanel fieldsPanel = new JPanel();
+        fieldsPanel.setLayout(null);
+        fieldsPanel.add(reqProfLabel);
+        fieldsPanel.add(reqProfTextField);
+        fieldsPanel.add(requestLabel);
+        fieldsPanel.add(requestTextField);
+        fieldsPanel.add(detailsLabel);
+        fieldsPanel.add(detailsTextField);
+        fieldsPanel.add(reqByLabel);
+        fieldsPanel.add(reqByTextField);
+        fieldsPanel.add(sendButton);
+
+        requestFrame.setLayout(new BorderLayout());
+        requestFrame.add(fieldsPanel, BorderLayout.CENTER);
+
+        requestFrame.pack();
+        requestFrame.setVisible(true);
+        requestFrame.setResizable(false);
+        requestFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    }
+
+    public void viewRequests() {
+        requestFrame = new JFrame();
+        requestFrame.setLocationRelativeTo(null);
+        requestFrame.setTitle("Requests");
+        requestFrame.setPreferredSize(new Dimension(400, 250));
+
+        requestLabel = new JLabel("Request Title: ");
+        requestTextField = new JTextField();
+        requestTextField.setEditable(false);
+        // set to req title
+        detailsLabel = new JLabel("Request Details: ");
+        detailsTextField = new JTextArea();
+        detailsTextField.setEditable(false);
+        // set to req details
+        detailsTextField.setLineWrap(true);
+        reqByLabel = new JLabel("Request by: ");
+        reqByTextField = new JTextField();
+        reqByTextField.setEditable(false);
+        // set to req author
+
+        okButton = new JButton("OK");
+        okButton.addActionListener(this);
+
+        requestLabel.setBounds(10, 10, 100, 30);
+        requestTextField.setBounds(110, 20, 250, 20);
+        detailsLabel.setBounds(10, 50, 100, 30);
+        detailsTextField.setBounds(110, 60, 250, 60);
+        reqByLabel.setBounds(10, 130, 100, 30);
+        reqByTextField.setBounds(110, 140, 250, 20);
+        okButton.setBounds(170, 180, 70, 20);
+
+        JPanel fieldsPanel = new JPanel();
+        fieldsPanel.setLayout(null);
+        fieldsPanel.add(requestLabel);
+        fieldsPanel.add(requestTextField);
+        fieldsPanel.add(detailsLabel);
+        fieldsPanel.add(detailsTextField);
+        fieldsPanel.add(reqByLabel);
+        fieldsPanel.add(reqByTextField);
+        fieldsPanel.add(okButton);
+
+        requestFrame.setLayout(new BorderLayout());
+        requestFrame.add(fieldsPanel, BorderLayout.CENTER);
+
+        requestFrame.pack();
+        requestFrame.setVisible(true);
+        requestFrame.setResizable(false);
+        requestFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    }
+
 
 }
